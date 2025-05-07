@@ -66,7 +66,7 @@ try {
     }
 
     // Reconstrói o index.json automaticamente após upload
-    $dir = 'images/';
+    $dir = '../images/';
     $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
     $images = [];
     if (is_dir($dir)) {

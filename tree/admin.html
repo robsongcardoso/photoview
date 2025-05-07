@@ -292,7 +292,7 @@
         // Função para carregar imagens existentes
         async function loadExistingImages() {
             try {
-                const response = await fetch('../images/index.json');
+                const response = await fetch('../images/index.json?t=' + Date.now());
                 if (!response.ok) {
                     throw new Error('Erro ao carregar imagens');
                 }
@@ -332,7 +332,7 @@
             if (!confirm('Tem certeza que deseja excluir esta imagem?')) return;
             
             try {
-                const response = await fetch('../images/index.json');
+                const response = await fetch('../images/index.json?t=' + Date.now());
                 if (!response.ok) {
                     throw new Error('Erro ao carregar índice de imagens');
                 }
@@ -404,7 +404,7 @@
             
             try {
                 // Primeiro, carrega o índice atual
-                const response = await fetch('../images/index.json');
+                const response = await fetch('../images/index.json?t=' + Date.now());
                 if (!response.ok) {
                     throw new Error('Erro ao carregar índice de imagens');
                 }
