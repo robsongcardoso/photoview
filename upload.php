@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 // Configurações
 $uploadDir = 'images/';
 $indexFile = $uploadDir . 'index.json';
-$allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+$allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
 
 // Cria o diretório se não existir
 if (!file_exists($uploadDir)) {
