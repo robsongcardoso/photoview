@@ -345,7 +345,7 @@
                 formData.append('index.json', blob);
                 formData.append('index.json', jsonContent);
                 
-                const uploadResponse = await fetch('upload.php', {
+                const uploadResponse = await fetch('./upload.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -423,7 +423,7 @@
                 formData.append('index.json', jsonContent);
                 
                 // Faz o upload
-                const uploadResponse = await fetch('upload.php', {
+                const uploadResponse = await fetch('./upload.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -452,7 +452,7 @@
         // Botão para atualizar o índice de imagens
         document.getElementById('rebuildIndexButton').addEventListener('click', async () => {
             try {
-                const response = await fetch('rebuild_index.php');
+                const response = await fetch('./rebuild_index.php');
                 const result = await response.json();
                 if (result.success) {
                     showNotification('Índice de imagens atualizado com sucesso!');
