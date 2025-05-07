@@ -206,7 +206,6 @@
             <ul class="navbar-menu">
                 <li><a href="index.html">Visualizador</a></li>
                 <li><a href="admin.html" class="active">Administração</a></li>
-                <li><a href="info_permissoes.php">Info PHP/Permissões</a></li>
             </ul>
         </div>
     </nav>
@@ -223,6 +222,8 @@
         <div id="fileList" class="file-list"></div>
         
         <button id="uploadButton" class="button" style="display: none;">Enviar Imagens</button>
+
+        <button id="rebuildIndexButton" class="button" style="margin-bottom: 20px;">Atualizar índice de imagens</button>
 
         <div class="existing-images">
             <h2>Imagens Existentes</h2>
@@ -445,6 +446,22 @@
                 showNotification('Erro ao enviar imagens: ' + error.message);
             } finally {
                 uploadButton.disabled = false;
+            }
+        });
+
+        // Botão para atualizar o índice de imagens
+        document.getElementById('rebuildIndexButton').addEventListener('click', async () => {
+            try {
+                const response = await fetch('rebuild_index.php');
+                const result = await response.json();
+                if (result.success) {
+                    showNotification('Índice de imagens atualizado com sucesso!');
+                    loadExistingImages();
+                } else {
+                    showNotification('Erro ao atualizar índice: ' + (result.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                showNotification('Erro ao atualizar índice: ' + error.message);
             }
         });
 
