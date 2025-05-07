@@ -65,6 +65,20 @@ try {
         }
     }
 
+    // Reconstrói o index.json automaticamente após upload
+    $dir = 'images/';
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+    $images = [];
+    if (is_dir($dir)) {
+        foreach (scandir($dir) as $file) {
+            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            if (in_array($ext, $allowedExtensions)) {
+                $images[] = $dir . $file;
+            }
+        }
+        file_put_contents($dir . 'index.json', json_encode($images, JSON_PRETTY_PRINT));
+    }
+
     // Retorna o conteúdo atual do index.json
     $currentIndex = file_get_contents($indexFile);
     echo json_encode([
