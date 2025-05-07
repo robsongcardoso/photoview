@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-$dir = 'images/';
+$dir = '../images/';
 $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
 $images = [];
 if (is_dir($dir)) {
