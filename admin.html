@@ -342,6 +342,7 @@
                 
                 const formData = new FormData();
                 formData.append('index.json', blob);
+                formData.append('index.json', jsonContent);
                 
                 const uploadResponse = await fetch('upload.php', {
                     method: 'POST',
@@ -418,6 +419,7 @@
                 const jsonContent = JSON.stringify(newImages, null, 2);
                 const blob = new Blob([jsonContent], { type: 'application/json' });
                 formData.append('index.json', blob);
+                formData.append('index.json', jsonContent);
                 
                 // Faz o upload
                 const uploadResponse = await fetch('upload.php', {

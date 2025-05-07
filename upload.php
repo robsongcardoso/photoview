@@ -44,10 +44,16 @@ try {
     // Atualiza o arquivo index.json
     if (isset($_FILES['index.json'])) {
         $indexContent = file_get_contents($_FILES['index.json']['tmp_name']);
-        if ($indexContent === false) {
-            throw new Exception('Erro ao ler o arquivo index.json');
-        }
+        error_log('index.json recebido via FILES: ' . $indexContent);
+    } elseif (isset($_POST['index.json'])) {
+        $indexContent = $_POST['index.json'];
+        error_log('index.json recebido via POST: ' . $indexContent);
+    } else {
+        $indexContent = false;
+        error_log('index.json não recebido.');
+    }
 
+    if ($indexContent !== false) {
         // Valida se o conteúdo é um JSON válido
         json_decode($indexContent);
         if (json_last_error() !== JSON_ERROR_NONE) {
