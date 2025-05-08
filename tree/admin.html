@@ -214,18 +214,17 @@
     <div class="container">
         <h1>PhotoView - Administração</h1>
         
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
+            <button id="uploadButton" class="button" style="display: none;">Enviar Imagens</button>
+            <button id="rebuildIndexButton" class="button">Atualizar índice de imagens</button>
+            <button id="toggleViewBtn" class="button" type="button">Visualizar em Lista</button>
+        </div>
         <div class="upload-zone" id="uploadZone">
             <i class="fas fa-cloud-upload-alt"></i>
             <p>Arraste suas imagens aqui ou clique para selecionar</p>
             <input type="file" id="fileInput" multiple accept=".jpg,.jpeg,.png,.gif,.webp" style="display: none;">
         </div>
-
         <div id="fileList" class="file-list"></div>
-        
-        <button id="uploadButton" class="button" style="display: none;">Enviar Imagens</button>
-
-        <button id="rebuildIndexButton" class="button" style="margin-bottom: 20px;">Atualizar índice de imagens</button>
-
         <div class="existing-images">
             <h2>Imagens Existentes</h2>
             <div id="imageGrid" class="image-grid"></div>
@@ -242,6 +241,15 @@
         const imageGrid = document.getElementById('imageGrid');
         const notification = document.getElementById('notification');
         let files = [];
+        let currentView = 'grid';
+        const toggleViewBtn = document.getElementById('toggleViewBtn');
+        if (toggleViewBtn) {
+            toggleViewBtn.addEventListener('click', () => {
+                currentView = currentView === 'grid' ? 'list' : 'grid';
+                toggleViewBtn.textContent = currentView === 'grid' ? 'Visualizar em Lista' : 'Visualizar em Grade';
+                loadExistingImages();
+            });
+        }
 
         // Função para mostrar notificação
         function showNotification(message) {
@@ -289,6 +297,43 @@
             uploadButton.style.display = files.length > 0 ? 'block' : 'none';
         }
 
+        // Função para criar item de lista de imagem
+        function createImageListItem(imagePath) {
+            const item = document.createElement('div');
+            item.className = 'image-list-item';
+
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = 'Thumb';
+            img.loading = 'lazy';
+
+            const info = document.createElement('div');
+            info.className = 'image-list-info';
+
+            const title = document.createElement('div');
+            title.className = 'image-list-title';
+            title.textContent = imagePath.split('/').pop();
+            info.appendChild(title);
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button image-list-copy';
+            copyButton.innerHTML = '<i class="fas fa-copy"></i> Copiar Link';
+            copyButton.onclick = () => copyToClipboard(window.location.origin + '/' + imagePath);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+            deleteBtn.onclick = () => deleteImage(imagePath);
+            deleteBtn.style.position = 'static';
+            deleteBtn.style.marginLeft = '10px';
+
+            item.appendChild(img);
+            item.appendChild(info);
+            item.appendChild(copyButton);
+            item.appendChild(deleteBtn);
+            return item;
+        }
+
         // Função para carregar imagens existentes
         async function loadExistingImages() {
             try {
@@ -297,30 +342,34 @@
                     throw new Error('Erro ao carregar imagens');
                 }
                 const images = await response.json();
-                
                 imageGrid.innerHTML = '';
                 if (images.length === 0) {
                     imageGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhuma imagem encontrada</p>';
                     return;
                 }
-
-                images.forEach(imagePath => {
-                    const div = document.createElement('div');
-                    div.className = 'image-item';
-                    
-                    const img = document.createElement('img');
-                    img.src = imagePath;
-                    img.alt = 'Imagem';
-                    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'delete-btn';
-                    deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-                    deleteBtn.onclick = () => deleteImage(imagePath);
-                    
-                    div.appendChild(img);
-                    div.appendChild(deleteBtn);
-                    imageGrid.appendChild(div);
-                });
+                if (currentView === 'grid') {
+                    imageGrid.className = 'image-grid';
+                    images.forEach(imagePath => {
+                        const div = document.createElement('div');
+                        div.className = 'image-item';
+                        const img = document.createElement('img');
+                        img.src = imagePath;
+                        img.alt = 'Imagem';
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        deleteBtn.onclick = () => deleteImage(imagePath);
+                        div.appendChild(img);
+                        div.appendChild(deleteBtn);
+                        imageGrid.appendChild(div);
+                    });
+                } else {
+                    imageGrid.className = 'image-list';
+                    images.forEach(imagePath => {
+                        const item = createImageListItem(imagePath);
+                        imageGrid.appendChild(item);
+                    });
+                }
             } catch (error) {
                 console.error('Error loading existing images:', error);
                 imageGrid.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: #e74c3c;">Erro ao carregar imagens</p>';

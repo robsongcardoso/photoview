@@ -55,13 +55,25 @@ try {
 
     if ($indexContent !== false) {
         // Valida se o conteúdo é um JSON válido
-        json_decode($indexContent);
+        $newIndex = json_decode($indexContent, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Conteúdo JSON inválido');
         }
 
         if (!file_put_contents($indexFile, $indexContent)) {
             throw new Exception('Erro ao salvar o arquivo index.json');
+        }
+
+        // EXCLUSÃO FÍSICA DOS ARQUIVOS REMOVIDOS DO ÍNDICE
+        $existingFiles = array_diff(scandir($uploadDir), ['.', '..', 'index.json']);
+        foreach ($existingFiles as $file) {
+            $filePath = $uploadDir . $file;
+            if (!in_array('images/' . $file, $newIndex) && !in_array('../images/' . $file, $newIndex)) {
+                // Remove o arquivo se não está mais no índice
+                if (is_file($filePath)) {
+                    unlink($filePath);
+                }
+            }
         }
     }
 

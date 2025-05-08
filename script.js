@@ -53,22 +53,70 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     }
 
+    // Function to create image list item
+    function createImageListItem(imagePath) {
+        const item = document.createElement('div');
+        item.className = 'image-list-item';
+
+        const img = document.createElement('img');
+        img.src = imagePath;
+        img.alt = 'Thumb';
+        img.loading = 'lazy';
+
+        const info = document.createElement('div');
+        info.className = 'image-list-info';
+
+        const title = document.createElement('div');
+        title.className = 'image-list-title';
+        title.textContent = imagePath.split('/').pop();
+
+        info.appendChild(title);
+
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-button image-list-copy';
+        copyButton.innerHTML = '<i class="fas fa-copy"></i> Copiar Link';
+        copyButton.onclick = () => copyToClipboard(window.location.origin + '/' + imagePath);
+
+        item.appendChild(img);
+        item.appendChild(info);
+        item.appendChild(copyButton);
+        return item;
+    }
+
+    let currentView = 'grid';
+    const toggleViewBtn = document.getElementById('toggleViewBtn');
+    if (toggleViewBtn) {
+        toggleViewBtn.addEventListener('click', () => {
+            currentView = currentView === 'grid' ? 'list' : 'grid';
+            toggleViewBtn.textContent = currentView === 'grid' ? 'Visualizar em Lista' : 'Visualizar em Grade';
+            loadImages();
+        });
+    }
+
     // Function to load images from the images directory
     async function loadImages() {
         try {
             // Tenta carregar o arquivo de índice de imagens
-            const response = await fetch('images/index.json');
+            const response = await fetch('images/index.json?t=' + Date.now());
             const images = await response.json();
-            
+            gallery.innerHTML = '';
             if (images.length === 0) {
                 gallery.innerHTML = '<p>Nenhuma imagem encontrada. Adicione imagens na pasta "images" e atualize o arquivo index.json</p>';
                 return;
             }
-
-            images.forEach(imagePath => {
-                const card = createImageCard(imagePath);
-                gallery.appendChild(card);
-            });
+            if (currentView === 'grid') {
+                gallery.className = 'image-grid';
+                images.forEach(imagePath => {
+                    const card = createImageCard(imagePath);
+                    gallery.appendChild(card);
+                });
+            } else {
+                gallery.className = 'image-list';
+                images.forEach(imagePath => {
+                    const item = createImageListItem(imagePath);
+                    gallery.appendChild(item);
+                });
+            }
         } catch (error) {
             console.error('Error loading images:', error);
             gallery.innerHTML = '<p>Erro ao carregar as imagens. Por favor, verifique se o arquivo images/index.json existe.</p>';
