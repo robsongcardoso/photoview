@@ -379,37 +379,18 @@
         // Função para deletar imagem
         async function deleteImage(imagePath) {
             if (!confirm('Tem certeza que deseja excluir esta imagem?')) return;
-            
             try {
-                const response = await fetch('../images/index.json?t=' + Date.now());
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar índice de imagens');
-                }
-                const images = await response.json();
-                const newImages = images.filter(img => {
-                    return img && (img.split('/').pop() !== imagePath.split('/').pop());
-                });
-                
-                const jsonContent = JSON.stringify(newImages, null, 2);
-                const blob = new Blob([jsonContent], { type: 'application/json' });
-                
+                const filename = imagePath.split('/').pop();
                 const formData = new FormData();
-                formData.append('index.json', jsonContent);
-                
-                const uploadResponse = await fetch('./upload.php', {
+                formData.append('filename', filename);
+                const response = await fetch('./delete_image.php', {
                     method: 'POST',
                     body: formData
                 });
-
-                if (!uploadResponse.ok) {
-                    throw new Error('Erro ao atualizar índice');
-                }
-
-                const result = await uploadResponse.json();
+                const result = await response.json();
                 if (!result.success) {
                     throw new Error(result.error || 'Erro ao excluir imagem');
                 }
-                
                 showNotification('Imagem excluída com sucesso!');
                 loadExistingImages();
             } catch (error) {
