@@ -386,7 +386,9 @@
                     throw new Error('Erro ao carregar índice de imagens');
                 }
                 const images = await response.json();
-                const newImages = images.filter(img => img !== imagePath);
+                const newImages = images.filter(img => {
+                    return img && (img.split('/').pop() !== imagePath.split('/').pop());
+                });
                 
                 const jsonContent = JSON.stringify(newImages, null, 2);
                 const blob = new Blob([jsonContent], { type: 'application/json' });
