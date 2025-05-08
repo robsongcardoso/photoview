@@ -101,6 +101,9 @@ try {
         'success' => true,
         'images' => json_decode($currentIndex)
     ]);
+
+    // Adiciona log visual para depuração do recebimento de index.json via POST ou FILES
+    file_put_contents('../images/log.txt', date('c') . "\n" . print_r($_POST, true) . "\n" . print_r($_FILES, true) . "\n", FILE_APPEND);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([

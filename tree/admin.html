@@ -394,7 +394,6 @@
                 const blob = new Blob([jsonContent], { type: 'application/json' });
                 
                 const formData = new FormData();
-                formData.append('index.json', blob);
                 formData.append('index.json', jsonContent);
                 
                 const uploadResponse = await fetch('./upload.php', {
