@@ -66,9 +66,13 @@ try {
 
         // EXCLUSÃO FÍSICA DOS ARQUIVOS REMOVIDOS DO ÍNDICE
         $existingFiles = array_diff(scandir($uploadDir), ['.', '..', 'index.json']);
+        // Extrai só os nomes dos arquivos do índice
+        $indexFileNames = array_map(function($path) {
+            return basename($path);
+        }, $newIndex);
         foreach ($existingFiles as $file) {
             $filePath = $uploadDir . $file;
-            if (!in_array('images/' . $file, $newIndex) && !in_array('../images/' . $file, $newIndex)) {
+            if (!in_array($file, $indexFileNames)) {
                 // Remove o arquivo se não está mais no índice
                 if (is_file($filePath)) {
                     unlink($filePath);
